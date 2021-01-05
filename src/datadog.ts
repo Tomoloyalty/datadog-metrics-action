@@ -41,7 +41,7 @@ export async function sendMetrics(
   const now = Date.now() / 1000
 
   for (const m of metrics) {
-    const allTags = m.tags.concat(globalTags)
+    const allTags = [...m.tags||[], ...globalTags||[]]
     s.series.push({
       metric: m.name,
       points: [[now, m.value]],
@@ -74,7 +74,7 @@ export async function sendEvents(
 
   let errors = 0
   for (const ev of events) {
-    ev.tags = ev.tags.concat(globalTags)
+    ev.tags = [...ev.tags||[], ...globalTags||[]]
     const res: httpm.HttpClientResponse = await http.post(
       'https://api.datadoghq.eu/api/v1/events',
       JSON.stringify(ev)

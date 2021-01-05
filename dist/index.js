@@ -983,7 +983,7 @@ function sendMetrics(apiKey, metrics, globalTags) {
         // timestamp must be in seconds
         const now = Date.now() / 1000;
         for (const m of metrics) {
-            const allTags = m.tags.concat(globalTags);
+            const allTags = [...m.tags || [], ...globalTags || []];
             s.series.push({
                 metric: m.name,
                 points: [[now, m.value]],
@@ -1009,7 +1009,7 @@ function sendEvents(apiKey, events, globalTags) {
         const http = getClient(apiKey);
         let errors = 0;
         for (const ev of events) {
-            ev.tags = ev.tags.concat(globalTags);
+            ev.tags = [...ev.tags || [], ...globalTags || []];
             const res = yield http.post('https://api.datadoghq.eu/api/v1/events', JSON.stringify(ev));
             if (res.message.statusCode === undefined || res.message.statusCode >= 400) {
                 errors++;
