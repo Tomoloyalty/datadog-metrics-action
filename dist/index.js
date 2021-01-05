@@ -918,10 +918,11 @@ function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const apiKey = core.getInput('api-key');
+            const globalTags = yaml.safeLoad(core.getInput('global-tags'));
             const metrics = yaml.safeLoad(core.getInput('metrics'));
-            yield dd.sendMetrics(apiKey, metrics);
+            yield dd.sendMetrics(apiKey, metrics, globalTags);
             const events = yaml.safeLoad(core.getInput('events'));
-            yield dd.sendEvents(apiKey, events);
+            yield dd.sendEvents(apiKey, events, globalTags);
         }
         catch (error) {
             core.setFailed(`Run failed: ${error.message}`);
@@ -972,7 +973,7 @@ function getClient(apiKey) {
         }
     });
 }
-function sendMetrics(apiKey, metrics) {
+function sendMetrics(apiKey, metrics, globalTags) {
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(`About to send ${metrics.length} metrics`);
         const http = getClient(apiKey);
@@ -982,12 +983,13 @@ function sendMetrics(apiKey, metrics) {
         // timestamp must be in seconds
         const now = Date.now() / 1000;
         for (const m of metrics) {
+            const allTags = m.tags.concat(globalTags);
             s.series.push({
                 metric: m.name,
                 points: [[now, m.value]],
                 type: m.type,
                 host: m.host,
-                tags: m.tags
+                tags: allTags
             });
         }
         const res = yield http.post('https://api.datadoghq.eu/api/v1/series', JSON.stringify(s));
@@ -1001,12 +1003,13 @@ function sendMetrics(apiKey, metrics) {
     });
 }
 exports.sendMetrics = sendMetrics;
-function sendEvents(apiKey, events) {
+function sendEvents(apiKey, events, globalTags) {
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(`About to send ${events.length} events`);
         const http = getClient(apiKey);
         let errors = 0;
         for (const ev of events) {
+            ev.tags = ev.tags.concat(globalTags);
             const res = yield http.post('https://api.datadoghq.eu/api/v1/events', JSON.stringify(ev));
             if (res.message.statusCode === undefined || res.message.statusCode >= 400) {
                 errors++;

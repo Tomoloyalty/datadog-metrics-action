@@ -28,7 +28,8 @@ function getClient(apiKey: string): httpm.HttpClient {
 
 export async function sendMetrics(
   apiKey: string,
-  metrics: Metric[]
+  metrics: Metric[],
+  globalTags: string[]
 ): Promise<void> {
   core.debug(`About to send ${metrics.length} metrics`)
   const http: httpm.HttpClient = getClient(apiKey)
@@ -40,12 +41,13 @@ export async function sendMetrics(
   const now = Date.now() / 1000
 
   for (const m of metrics) {
+    const allTags = m.tags.concat(globalTags)
     s.series.push({
       metric: m.name,
       points: [[now, m.value]],
       type: m.type,
       host: m.host,
-      tags: m.tags
+      tags: allTags
     })
   }
 
@@ -64,13 +66,15 @@ export async function sendMetrics(
 
 export async function sendEvents(
   apiKey: string,
-  events: Event[]
+  events: Event[],
+  globalTags: string[]
 ): Promise<void> {
   core.debug(`About to send ${events.length} events`)
   const http: httpm.HttpClient = getClient(apiKey)
 
   let errors = 0
   for (const ev of events) {
+    ev.tags = ev.tags.concat(globalTags)
     const res: httpm.HttpClientResponse = await http.post(
       'https://api.datadoghq.eu/api/v1/events',
       JSON.stringify(ev)
