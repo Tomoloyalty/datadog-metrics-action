@@ -28,6 +28,7 @@
     "@actions/core": "^1.2.6",
     "@actions/http-client": "^1.0.8",
     "@types/js-yaml": "^3.12.3",
+    "dotenv": "^8.2.0",
     "js-yaml": "^3.13.1"
   },
   "devDependencies": {

@@ -50,12 +50,15 @@ export async function sendMetrics(
   }
 
   const res: httpm.HttpClientResponse = await http.post(
-    'https://api.datadoghq.com/api/v1/series',
+    'https://api.datadoghq.eu/api/v1/series',
     JSON.stringify(s)
   )
 
   if (res.message.statusCode === undefined || res.message.statusCode >= 400) {
     throw new Error(`HTTP request failed: ${res.message.statusMessage}`)
+  } else {
+    core.info(`Response Status: ${res.message.statusCode}`)
+    core.info(`Response Message: ${res.message.statusMessage}`)
   }
 }
 
@@ -69,12 +72,15 @@ export async function sendEvents(
   let errors = 0
   for (const ev of events) {
     const res: httpm.HttpClientResponse = await http.post(
-      'https://api.datadoghq.com/api/v1/events',
+      'https://api.datadoghq.eu/api/v1/events',
       JSON.stringify(ev)
     )
     if (res.message.statusCode === undefined || res.message.statusCode >= 400) {
       errors++
       core.error(`HTTP request failed: ${res.message.statusMessage}`)
+    } else {
+      core.info(`Response Status: ${res.message.statusCode}`)
+      core.info(`Response Message: ${res.message.statusMessage}`)
     }
   }
 

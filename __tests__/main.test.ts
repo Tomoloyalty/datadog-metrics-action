@@ -3,6 +3,7 @@ import * as process from 'process'
 import * as cp from 'child_process'
 import * as path from 'path'
 import * as yaml from 'js-yaml'
+import * as dotenv from 'dotenv'
 
 // test('throws invalid number', async () => {
 //   const input = parseInt('foo', 10)
@@ -19,6 +20,9 @@ import * as yaml from 'js-yaml'
 
 // shows how the runner will run a javascript action with env / stdout protocol
 test('test runs', () => {
+  // require('dotenv').config();
+  dotenv.config();
+
   process.env['INPUT_API-KEY'] = process.env['DD_API_KEY']
   process.env['INPUT_METRICS'] = yaml.safeDump([
     {
