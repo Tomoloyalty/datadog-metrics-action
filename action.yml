@@ -8,9 +8,11 @@ inputs:
   metrics:
     description: 'A list of metrics objects to send, see docs for details'
     default: '[]'
+    required: false
   events:
     description: 'A list of event objects to send, see docs for details'
     default: '[]'
+    required: false
 runs:
   using: 'node12'
   main: 'dist/index.js'

@@ -100,3 +100,8 @@ lib/**/*
 
 # Ignore .evn files
 .env
+
+.gitconfig
+.idea/
+datadog.iml
+
