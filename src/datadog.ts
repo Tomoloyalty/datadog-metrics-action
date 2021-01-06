@@ -27,6 +27,7 @@ function getClient(apiKey: string): httpm.HttpClient {
 }
 
 export async function sendMetrics(
+  ddDomainSuffix: string,
   apiKey: string,
   metrics: Metric[],
   globalTags: string[]
@@ -51,8 +52,9 @@ export async function sendMetrics(
     })
   }
 
+
   const res: httpm.HttpClientResponse = await http.post(
-    'https://api.datadoghq.eu/api/v1/series',
+    `https://api.datadoghq.${ddDomainSuffix}/api/v1/series`,
     JSON.stringify(s)
   )
 
@@ -65,6 +67,7 @@ export async function sendMetrics(
 }
 
 export async function sendEvents(
+  ddDomainSuffix: string,
   apiKey: string,
   events: Event[],
   globalTags: string[]
@@ -76,7 +79,7 @@ export async function sendEvents(
   for (const ev of events) {
     ev.tags = [...ev.tags||[], ...globalTags||[]]
     const res: httpm.HttpClientResponse = await http.post(
-      'https://api.datadoghq.eu/api/v1/events',
+      `https://api.datadoghq.${ddDomainSuffix}/api/v1/events`,
       JSON.stringify(ev)
     )
     if (res.message.statusCode === undefined || res.message.statusCode >= 400) {
