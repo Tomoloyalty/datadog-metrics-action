@@ -917,12 +917,14 @@ const yaml = __importStar(__webpack_require__(414));
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
+            const datadogRegion = core.getInput('datadog-region');
+            const ddDomainSuffix = (datadogRegion.toUpperCase() === 'EU') ? 'eu' : 'com';
             const apiKey = core.getInput('api-key');
             const globalTags = yaml.safeLoad(core.getInput('global-tags'));
             const metrics = yaml.safeLoad(core.getInput('metrics'));
-            yield dd.sendMetrics(apiKey, metrics, globalTags);
+            yield dd.sendMetrics(ddDomainSuffix, apiKey, metrics, globalTags);
             const events = yaml.safeLoad(core.getInput('events'));
-            yield dd.sendEvents(apiKey, events, globalTags);
+            yield dd.sendEvents(ddDomainSuffix, apiKey, events, globalTags);
         }
         catch (error) {
             core.setFailed(`Run failed: ${error.message}`);
@@ -973,7 +975,7 @@ function getClient(apiKey) {
         }
     });
 }
-function sendMetrics(apiKey, metrics, globalTags) {
+function sendMetrics(ddDomainSuffix, apiKey, metrics, globalTags) {
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(`About to send ${metrics.length} metrics`);
         const http = getClient(apiKey);
@@ -992,7 +994,7 @@ function sendMetrics(apiKey, metrics, globalTags) {
                 tags: allTags
             });
         }
-        const res = yield http.post('https://api.datadoghq.eu/api/v1/series', JSON.stringify(s));
+        const res = yield http.post(`https://api.datadoghq.${ddDomainSuffix}/api/v1/series`, JSON.stringify(s));
         if (res.message.statusCode === undefined || res.message.statusCode >= 400) {
             throw new Error(`HTTP request failed: ${res.message.statusMessage}`);
         }
@@ -1003,14 +1005,14 @@ function sendMetrics(apiKey, metrics, globalTags) {
     });
 }
 exports.sendMetrics = sendMetrics;
-function sendEvents(apiKey, events, globalTags) {
+function sendEvents(ddDomainSuffix, apiKey, events, globalTags) {
     return __awaiter(this, void 0, void 0, function* () {
         core.debug(`About to send ${events.length} events`);
         const http = getClient(apiKey);
         let errors = 0;
         for (const ev of events) {
             ev.tags = [...ev.tags || [], ...globalTags || []];
-            const res = yield http.post('https://api.datadoghq.eu/api/v1/events', JSON.stringify(ev));
+            const res = yield http.post(`https://api.datadoghq.${ddDomainSuffix}/api/v1/events`, JSON.stringify(ev));
             if (res.message.statusCode === undefined || res.message.statusCode >= 400) {
                 errors++;
                 core.error(`HTTP request failed: ${res.message.statusMessage}`);
