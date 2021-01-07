@@ -1023,6 +1023,8 @@ function getClient(apiKey) {
 }
 function sendMetrics(ddDomainSuffix, apiKey, metrics, globalTags) {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log(metrics);
+        core.info(`About to send ${metrics.length} metrics`);
         core.debug(`About to send ${metrics.length} metrics`);
         const http = getClient(apiKey);
         const s = {

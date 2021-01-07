@@ -32,6 +32,8 @@ export async function sendMetrics(
   metrics: Metric[],
   globalTags: string[]
 ): Promise<void> {
+  console.log(metrics)
+  core.info(`About to send ${metrics.length} metrics`)
   core.debug(`About to send ${metrics.length} metrics`)
   const http: httpm.HttpClient = getClient(apiKey)
   const s = {
