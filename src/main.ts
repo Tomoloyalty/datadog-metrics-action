@@ -18,13 +18,13 @@ async function run(): Promise<void> {
     console.log("Github passed");
     console.log(JSON.stringify(github));
     console.log("values");
-    console.log("project:"+ github.repository);
-    console.log("branch:"+ github.ref);
+    console.log("project:"+ github["repository"]);
+    console.log("branch:"+ github["ref"]);
 
-    globalTags.push("project:"+ github.repository)
-    globalTags.push("branch:"+ github.ref)
-    globalTags.push("repo_owner:"+ github.repository_owner)
-    globalTags.push("build_number:"+ github.run_number)
+    globalTags.push("project:"+ github["repository"])
+    globalTags.push("branch:"+ github["ref"])
+    globalTags.push("repo_owner:"+ github["repository_owner"])
+    globalTags.push("build_number:"+ github["run_number"])
     globalTags.push("build_result:"+ result)
     globalTags.push("env:"+ envName)
     globalTags.push("source:"+ "github")
