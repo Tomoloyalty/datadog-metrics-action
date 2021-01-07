@@ -54,9 +54,9 @@ async function createMetrics(ddDomainSuffix: string, apiKey: string, globalTags:
   const startTime: string = core.getInput('start-timestamp')
   const metrics: dd.Metric[] = yaml.safeLoad(core.getInput('metrics'))
   console.log(`Date Now: ${Math.floor(Date.now() / 1000)}`)
-  console.log(`Date start: ${startTime} ` )
-  console.log(`Metric ${(Math.floor(Date.now() / 1000) - new Date(startTime).getTime())}`)
-  const elapsedTime = Math.floor(Date.now() / 1000) - new Date(startTime).getTime()
+  console.log(`Date start: ${+startTime} ` )
+  console.log(`Metric ${(Math.floor(Date.now() / 1000) - new Date(+startTime).getTime())}`)
+  const elapsedTime = Math.floor(Date.now() / 1000) - new Date(+startTime).getTime()
   const metric: dd.Metric = {
     type: "count",
     name: "build.duration",
