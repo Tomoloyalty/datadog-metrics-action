@@ -923,19 +923,24 @@ function run() {
             const globalTags = yaml.safeLoad(core.getInput('global-tags'));
             const result = core.getInput('result');
             const envName = core.getInput('env-name');
-            const github = core.getInput('github-context');
-            globalTags.push("project:" + JSON.parse(github)["repository"]);
-            globalTags.push("branch:" + JSON.parse(github)["ref"]);
-            globalTags.push("repo_owner:" + JSON.parse(github)["repository_owner"]);
-            globalTags.push("build_number:" + JSON.parse(github)["run_number"]);
-            globalTags.push("commit_sha:" + JSON.parse(github)["sha"]);
-            globalTags.push("actor:" + JSON.parse(github)["actor"]);
+            const github = JSON.parse(core.getInput('github-context'));
+            globalTags.push("project:" + github["repository"]);
+            globalTags.push("branch:" + github["ref"]);
+            globalTags.push("repo_owner:" + github["repository_owner"]);
+            globalTags.push("build_number:" + github["run_number"]);
+            globalTags.push("commit_sha:" + github["sha"]);
+            globalTags.push("actor:" + github["actor"]);
             globalTags.push("source:" + "github");
             globalTags.push("build_result:" + result);
             globalTags.push("env:" + envName);
             const metrics = yaml.safeLoad(core.getInput('metrics'));
             yield dd.sendMetrics(ddDomainSuffix, apiKey, metrics, globalTags);
             const events = yaml.safeLoad(core.getInput('events'));
+            events.push(yaml.safeLoad(`|
+            - title: "#${github.run_number} - ${github.repository} Build Result: ${result}"
+              text: "Commit ${github["sha"]} : ${github.event.head_commit.message} -by: ${github.event.head_commit.author.name}"
+              alert_type: ${result === 'failure' ? 'error' : result}
+              host: ${github.repository_owner} `));
             yield dd.sendEvents(ddDomainSuffix, apiKey, events, globalTags);
         }
         catch (error) {
