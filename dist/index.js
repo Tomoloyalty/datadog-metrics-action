@@ -951,14 +951,16 @@ function createEvents(ddDomainSuffix, apiKey, globalTags, github, result) {
     var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
     return __awaiter(this, void 0, void 0, function* () {
         const events = yaml.safeLoad(core.getInput('events'));
-        const event = {
-            title: `# ${(_a = github) === null || _a === void 0 ? void 0 : _a.run_number} - ${(_b = github) === null || _b === void 0 ? void 0 : _b.repository} Build Result: ${result}`,
-            text: `Commit ${(_c = github) === null || _c === void 0 ? void 0 : _c.sha} : ${(_f = (_e = (_d = github) === null || _d === void 0 ? void 0 : _d.event) === null || _e === void 0 ? void 0 : _e.head_commit) === null || _f === void 0 ? void 0 : _f.message} -by: ${(_k = (_j = (_h = (_g = github) === null || _g === void 0 ? void 0 : _g.event) === null || _h === void 0 ? void 0 : _h.head_commit) === null || _j === void 0 ? void 0 : _j.author) === null || _k === void 0 ? void 0 : _k.name}`,
-            alert_type: result === 'failure' ? 'error' : result,
-            host: (_l = github) === null || _l === void 0 ? void 0 : _l.repository_owner,
-            tags: []
-        };
-        events.push(event);
+        if (github.run_number) {
+            const event = {
+                title: `# ${(_a = github) === null || _a === void 0 ? void 0 : _a.run_number} - ${(_b = github) === null || _b === void 0 ? void 0 : _b.repository} Build Result: ${result}`,
+                text: `Commit ${(_c = github) === null || _c === void 0 ? void 0 : _c.sha} : ${(_f = (_e = (_d = github) === null || _d === void 0 ? void 0 : _d.event) === null || _e === void 0 ? void 0 : _e.head_commit) === null || _f === void 0 ? void 0 : _f.message} -by: ${(_k = (_j = (_h = (_g = github) === null || _g === void 0 ? void 0 : _g.event) === null || _h === void 0 ? void 0 : _h.head_commit) === null || _j === void 0 ? void 0 : _j.author) === null || _k === void 0 ? void 0 : _k.name}`,
+                alert_type: result === 'failure' ? 'error' : result,
+                host: (_l = github) === null || _l === void 0 ? void 0 : _l.repository_owner,
+                tags: []
+            };
+            events.push(event);
+        }
         yield dd.sendEvents(ddDomainSuffix, apiKey, events, globalTags);
     });
 }

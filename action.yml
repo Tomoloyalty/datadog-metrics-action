@@ -5,6 +5,11 @@ inputs:
   api-key:
     description: 'A valid Datadog API Key'
     required: true
+
+  github-context:
+    description: 'Context of github being executed'
+    required: false
+
   datadog-region:
     description: 'Region of Datadog instance, value can be either us or eu'
     required: false
@@ -23,11 +28,6 @@ inputs:
     description: 'Name of the environment the build for'
     required: false
     default: 'NA'
-
-  github-context:
-    description: 'Context of github being executed'
-    required: false
-    default: '{}'
 
   global-tags:
     description: 'A list of tags (key, values) that you want to apply for all metrics and events'

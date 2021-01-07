@@ -38,14 +38,18 @@ function addDefaultGlobalTags(globalTags: string[], github: any, result: string,
 
 async function createEvents(ddDomainSuffix: string, apiKey: string, globalTags: string[], github: any, result: string): Promise<void> {
   const events: dd.Event[] = yaml.safeLoad(core.getInput('events'))
-  const event: dd.Event = {
-    title: `# ${ github?.run_number } - ${ github?.repository } Build Result: ${ result }`,
-    text: `Commit ${ github?.sha } : ${ github?.event?.head_commit?.message } -by: ${ github?.event?.head_commit?.author?.name }`,
-    alert_type: result === 'failure' ? 'error' : result,
-    host: github?.repository_owner,
-    tags: []
+
+  if(github.run_number) {
+    const event: dd.Event = {
+      title: `# ${github?.run_number} - ${github?.repository} Build Result: ${result}`,
+      text: `Commit ${github?.sha} : ${github?.event?.head_commit?.message} -by: ${github?.event?.head_commit?.author?.name}`,
+      alert_type: result === 'failure' ? 'error' : result,
+      host: github?.repository_owner,
+      tags: []
+    }
+    events.push(event)
   }
-  events.push(event)
+
   await dd.sendEvents(ddDomainSuffix, apiKey, events, globalTags)
 }
 
