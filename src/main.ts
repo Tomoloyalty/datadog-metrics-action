@@ -53,14 +53,14 @@ async function createEvents(ddDomainSuffix: string, apiKey: string, globalTags: 
 async function createMetrics(ddDomainSuffix: string, apiKey: string, globalTags: string[]) : Promise<void>{
   const startTime: string = core.getInput('start-timestamp')
   const metrics: dd.Metric[] = yaml.safeLoad(core.getInput('metrics'))
-  console.log(`Date Noe: ${Date.now()}`)
-  console.log(`Date start: ${startTime} : ie ${new Date(startTime).getTime()}` )
-  console.log(`Metric ${(Date.now() - new Date(startTime).getTime())/1000}`)
-
+  console.log(`Date Now: ${Math.floor(Date.now() / 1000)}`)
+  console.log(`Date start: ${startTime} ` )
+  console.log(`Metric ${(Math.floor(Date.now() / 1000) - new Date(startTime).getTime())}`)
+  const elapsedTime = Math.floor(Date.now() / 1000) - new Date(startTime).getTime()
   const metric: dd.Metric = {
     type: "count",
     name: "build.duration",
-    value: (Date.now() - new Date(startTime).getTime())/1000,
+    value: elapsedTime,
     host: "Github",
     tags: []
   }
