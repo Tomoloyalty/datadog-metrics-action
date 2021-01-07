@@ -1,6 +1,16 @@
+
+***********
+
+# PUBLIC REPO
+
+Currently Github actions require all Actions to be hosted in a public repo. 
+Ensure NO sensitve information is present. 
+
+***********
+
+
 # Datadog Action
 
-[![Build Status](https://github.com/actions/typescript-action/workflows/build-test/badge.svg)](https://github.com/actions/typescript-action/actions)
 
 This Action lets you send events and metrics to Datadog from a GitHub workflow.
 
@@ -56,10 +66,6 @@ Install the dependencies
 $ npm install
 ```
 
-Build the typescript and package it for distribution
-```bash
-$ npm run build && npm run pack
-```
 
 Run the tests :heavy_check_mark:
 ```bash
@@ -72,3 +78,18 @@ $ npm test
 
 ...
 ```
+
+
+## Build and Push 
+
+Build the typescript and package it for distribution
+```bash
+$ npm run build && npm run pack
+$ git commit ...
+$ git push ...
+```
+
+## Create a new Release Version 
+
+
+
