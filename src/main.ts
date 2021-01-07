@@ -16,25 +16,32 @@ async function run(): Promise<void> {
     const github: any = core.getInput('github-context')
 
     console.log("Github passed");
-    console.log(JSON.stringify(github));
     console.log("values");
-    console.log("project:"+ Object(github)["repository"]);
+    console.log("project:"+ JSON.parse(github)["repository"]);
     console.log("branch:"+ Object(github)["ref"]);
+
+    console.log("object:"+ github);
+    console.log(typeof github);
+    console.log(JSON.stringify(github));
 
     globalTags.push("project:"+ github["repository"])
     globalTags.push("branch:"+ github["ref"])
     globalTags.push("repo_owner:"+ github["repository_owner"])
     globalTags.push("build_number:"+ github["run_number"])
-    globalTags.push("build_result:"+ result)
-    globalTags.push("env:"+ envName)
-    globalTags.push("source:"+ "github")
 
-    const metrics: dd.Metric[] = yaml.safeLoad(core.getInput('metrics'))
-    await dd.sendMetrics(ddDomainSuffix, apiKey, metrics, globalTags)
+
+    // globalTags.push("source:"+ "github")
+    // globalTags.push("build_result:"+ result)
+    // globalTags.push("env:"+ envName)
+
+    // const metrics: dd.Metric[] = yaml.safeLoad(core.getInput('metrics'))
+    // await dd.sendMetrics(ddDomainSuffix, apiKey, metrics, globalTags)
 
     const events: dd.Event[] = yaml.safeLoad(core.getInput('events'))
     await dd.sendEvents(ddDomainSuffix, apiKey, events, globalTags)
   } catch (error) {
+    console.log("Error")
+    console.log(`Run failed: ${error.message}`)
     core.setFailed(`Run failed: ${error.message}`)
   }
 }
