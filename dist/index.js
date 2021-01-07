@@ -948,14 +948,14 @@ function addDefaultGlobalTags(globalTags, github, result, envName) {
     globalTags.push("env:" + envName);
 }
 function createEvents(ddDomainSuffix, apiKey, globalTags, github, result) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
     return __awaiter(this, void 0, void 0, function* () {
         const events = yaml.safeLoad(core.getInput('events'));
         const event = {
             title: `# ${(_a = github) === null || _a === void 0 ? void 0 : _a.run_number} - ${(_b = github) === null || _b === void 0 ? void 0 : _b.repository} Build Result: ${result}`,
-            text: `Commit ${github["sha"]} : ${(_e = (_d = (_c = github) === null || _c === void 0 ? void 0 : _c.event) === null || _d === void 0 ? void 0 : _d.head_commit) === null || _e === void 0 ? void 0 : _e.message} -by: ${(_j = (_h = (_g = (_f = github) === null || _f === void 0 ? void 0 : _f.event) === null || _g === void 0 ? void 0 : _g.head_commit) === null || _h === void 0 ? void 0 : _h.author) === null || _j === void 0 ? void 0 : _j.name}`,
+            text: `Commit ${(_c = github) === null || _c === void 0 ? void 0 : _c.sha} : ${(_f = (_e = (_d = github) === null || _d === void 0 ? void 0 : _d.event) === null || _e === void 0 ? void 0 : _e.head_commit) === null || _f === void 0 ? void 0 : _f.message} -by: ${(_k = (_j = (_h = (_g = github) === null || _g === void 0 ? void 0 : _g.event) === null || _h === void 0 ? void 0 : _h.head_commit) === null || _j === void 0 ? void 0 : _j.author) === null || _k === void 0 ? void 0 : _k.name}`,
             alert_type: result === 'failure' ? 'error' : result,
-            host: (_k = github) === null || _k === void 0 ? void 0 : _k.repository_owner,
+            host: (_l = github) === null || _l === void 0 ? void 0 : _l.repository_owner,
             tags: []
         };
         events.push(event);
@@ -966,18 +966,20 @@ function createMetrics(ddDomainSuffix, apiKey, globalTags) {
     return __awaiter(this, void 0, void 0, function* () {
         const startTime = core.getInput('start-timestamp');
         const metrics = yaml.safeLoad(core.getInput('metrics'));
-        console.log(`Date Now: ${Math.floor(Date.now() / 1000)}`);
-        console.log(`Date start: ${+startTime} `);
-        console.log(`Metric ${(Math.floor(Date.now() / 1000) - new Date(+startTime).getTime())}`);
-        const elapsedTime = Math.floor(Date.now() / 1000) - new Date(+startTime).getTime();
-        const metric = {
-            type: "count",
-            name: "build.duration",
-            value: elapsedTime,
-            host: "Github",
-            tags: []
-        };
-        metrics.push(metric);
+        if (startTime) {
+            const elapsedTime = Math.floor(Date.now() / 1000) - new Date(+startTime).getTime();
+            const metric = {
+                type: "count",
+                name: "build.duration",
+                value: elapsedTime,
+                host: "Github",
+                tags: []
+            };
+            metrics.push(metric);
+        }
+        else {
+            core.info(`start time not defined`);
+        }
         yield dd.sendMetrics(ddDomainSuffix, apiKey, metrics, globalTags);
     });
 }

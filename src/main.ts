@@ -37,11 +37,10 @@ function addDefaultGlobalTags(globalTags: string[], github: any, result: string,
 }
 
 async function createEvents(ddDomainSuffix: string, apiKey: string, globalTags: string[], github: any, result: string): Promise<void> {
-
   const events: dd.Event[] = yaml.safeLoad(core.getInput('events'))
   const event: dd.Event = {
     title: `# ${ github?.run_number } - ${ github?.repository } Build Result: ${ result }`,
-    text: `Commit ${ github["sha"] } : ${ github?.event?.head_commit?.message } -by: ${ github?.event?.head_commit?.author?.name }`,
+    text: `Commit ${ github?.sha } : ${ github?.event?.head_commit?.message } -by: ${ github?.event?.head_commit?.author?.name }`,
     alert_type: result === 'failure' ? 'error' : result,
     host: github?.repository_owner,
     tags: []
@@ -53,18 +52,20 @@ async function createEvents(ddDomainSuffix: string, apiKey: string, globalTags: 
 async function createMetrics(ddDomainSuffix: string, apiKey: string, globalTags: string[]) : Promise<void>{
   const startTime: string = core.getInput('start-timestamp')
   const metrics: dd.Metric[] = yaml.safeLoad(core.getInput('metrics'))
-  console.log(`Date Now: ${Math.floor(Date.now() / 1000)}`)
-  console.log(`Date start: ${+startTime} ` )
-  console.log(`Metric ${(Math.floor(Date.now() / 1000) - new Date(+startTime).getTime())}`)
-  const elapsedTime = Math.floor(Date.now() / 1000) - new Date(+startTime).getTime()
-  const metric: dd.Metric = {
-    type: "count",
-    name: "build.duration",
-    value: elapsedTime,
-    host: "Github",
-    tags: []
+
+  if(startTime) {
+    const elapsedTime = Math.floor(Date.now() / 1000) - new Date(+startTime).getTime()
+    const metric: dd.Metric = {
+      type: "count",
+      name: "build.duration",
+      value: elapsedTime,
+      host: "Github",
+      tags: []
+    }
+    metrics.push(metric)
+  } else {
+    core.info(`start time not defined`);
   }
-  metrics.push(metric)
   await dd.sendMetrics(ddDomainSuffix, apiKey, metrics, globalTags)
 }
 
