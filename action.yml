@@ -13,18 +13,21 @@ inputs:
   start-timestamp:
     description: 'Timestamp for calculating duration event'
     required: false
+
   result:
     description: 'Result of the Build'
     required: false
     default: 'NA'
+
   env-name:
     description: 'Name of the environment the build for'
     required: false
     default: 'NA'
+
   github-context:
     description: 'Context of github being executed'
     required: false
-    default: {}
+    default: '{}'
 
   global-tags:
     description: 'A list of tags (key, values) that you want to apply for all metrics and events'
