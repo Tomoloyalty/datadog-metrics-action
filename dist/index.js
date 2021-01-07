@@ -921,6 +921,18 @@ function run() {
             const ddDomainSuffix = (datadogRegion.toUpperCase() === 'EU') ? 'eu' : 'com';
             const apiKey = core.getInput('api-key');
             const globalTags = yaml.safeLoad(core.getInput('global-tags'));
+            const result = core.getInput('result');
+            const envName = core.getInput('env-name');
+            const github = core.getInput('github-context');
+            console.log("Github passed");
+            console.log(JSON.stringify(github));
+            globalTags.push("project:" + github.repository);
+            globalTags.push("branch:" + github.ref);
+            globalTags.push("repo_owner:" + github.repository_owner);
+            globalTags.push("build_number:" + github.run_number);
+            globalTags.push("build_result:" + result);
+            globalTags.push("env:" + envName);
+            globalTags.push("source:" + "github");
             const metrics = yaml.safeLoad(core.getInput('metrics'));
             yield dd.sendMetrics(ddDomainSuffix, apiKey, metrics, globalTags);
             const events = yaml.safeLoad(core.getInput('events'));

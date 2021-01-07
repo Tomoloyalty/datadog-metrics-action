@@ -2,17 +2,28 @@ name: 'Datadog Action'
 description: 'Push Datadog metrics and events from GitHub Actions'
 author: 'Srikanth Nutigattu'
 inputs:
+  api-key:
+    description: 'A valid Datadog API Key'
+    required: true
   datadog-region:
     description: 'Region of Datadog instance, value can be either us or eu'
     required: false
     default: 'eu'
+
+  result:
+    description: 'Result of the Build'
+    required: false
+  env-name:
+    description: 'Name of the environment the build for'
+    required: false
+  github-context:
+    description: 'Context of github being executed'
+    required: false
+
   global-tags:
     description: 'A list of tags (key, values) that you want to apply for all metrics and events'
     default: '[]'
     required: false
-  api-key:
-    description: 'A valid Datadog API Key'
-    required: true
   metrics:
     description: 'A list of metrics objects to send, see docs for details'
     default: '[]'

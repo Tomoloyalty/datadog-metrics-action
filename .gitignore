@@ -105,3 +105,4 @@ lib/**/*
 .idea/
 datadog.iml
 
+datadog-metrics-action.iml
