@@ -17,6 +17,9 @@ async function run(): Promise<void> {
 
     console.log("Github passed");
     console.log(JSON.stringify(github));
+    console.log("values");
+    console.log("project:"+ github.repository);
+    console.log("branch:"+ github.ref);
 
     globalTags.push("project:"+ github.repository)
     globalTags.push("branch:"+ github.ref)
