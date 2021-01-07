@@ -9,6 +9,7 @@ inputs:
   github-context:
     description: 'Context of github being executed'
     required: false
+    default: '{}'
 
   datadog-region:
     description: 'Region of Datadog instance, value can be either us or eu'
