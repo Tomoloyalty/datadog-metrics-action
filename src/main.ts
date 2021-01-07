@@ -25,8 +25,8 @@ async function run(): Promise<void> {
     globalTags.push("build_result:"+ result)
     globalTags.push("env:"+ envName)
 
-    // const metrics: dd.Metric[] = yaml.safeLoad(core.getInput('metrics'))
-    // await dd.sendMetrics(ddDomainSuffix, apiKey, metrics, globalTags)
+    const metrics: dd.Metric[] = yaml.safeLoad(core.getInput('metrics'))
+    await dd.sendMetrics(ddDomainSuffix, apiKey, metrics, globalTags)
 
     const events: dd.Event[] = yaml.safeLoad(core.getInput('events'))
     await dd.sendEvents(ddDomainSuffix, apiKey, events, globalTags)
