@@ -30,10 +30,10 @@ async function run(): Promise<void> {
 
     const events: dd.Event[] = yaml.safeLoad(core.getInput('events'))
     const event: dd.Event = {
-      title: `# ${ github.run_number } - ${ github.repository } Build Result: ${ result }`,
-      text: `Commit ${ github["sha"] } : ${ github.event.head_commit.message } -by: ${ github.event.head_commit.author.name }`,
+      title: `# ${ github?.run_number } - ${ github?.repository } Build Result: ${ result }`,
+      text: `Commit ${ github["sha"] } : ${ github?.event?.head_commit?.message } -by: ${ github?.event?.head_commit?.author?.name }`,
       alert_type: result === 'failure' ? 'error' : result,
-      host: github.repository_owner,
+      host: github?.repository_owner,
       tags: []
     }
     events.push(event)
@@ -41,8 +41,8 @@ async function run(): Promise<void> {
     await dd.sendEvents(ddDomainSuffix, apiKey, events, globalTags)
   } catch (error) {
     console.log("Error")
-    console.log(`Run failed: ${error.message}`)
-    core.setFailed(`Run failed: ${error.message}`)
+    console.log(`Run failed: ${error?.message}`)
+    core.setFailed(`Run failed: ${error?.message}`)
   }
 }
 

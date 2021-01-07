@@ -915,6 +915,7 @@ const core = __importStar(__webpack_require__(470));
 const dd = __importStar(__webpack_require__(223));
 const yaml = __importStar(__webpack_require__(414));
 function run() {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const datadogRegion = core.getInput('datadog-region');
@@ -937,10 +938,10 @@ function run() {
             yield dd.sendMetrics(ddDomainSuffix, apiKey, metrics, globalTags);
             const events = yaml.safeLoad(core.getInput('events'));
             const event = {
-                title: `# ${github.run_number} - ${github.repository} Build Result: ${result}`,
-                text: `Commit ${github["sha"]} : ${github.event.head_commit.message} -by: ${github.event.head_commit.author.name}`,
+                title: `# ${(_a = github) === null || _a === void 0 ? void 0 : _a.run_number} - ${(_b = github) === null || _b === void 0 ? void 0 : _b.repository} Build Result: ${result}`,
+                text: `Commit ${github["sha"]} : ${(_e = (_d = (_c = github) === null || _c === void 0 ? void 0 : _c.event) === null || _d === void 0 ? void 0 : _d.head_commit) === null || _e === void 0 ? void 0 : _e.message} -by: ${(_j = (_h = (_g = (_f = github) === null || _f === void 0 ? void 0 : _f.event) === null || _g === void 0 ? void 0 : _g.head_commit) === null || _h === void 0 ? void 0 : _h.author) === null || _j === void 0 ? void 0 : _j.name}`,
                 alert_type: result === 'failure' ? 'error' : result,
-                host: github.repository_owner,
+                host: (_k = github) === null || _k === void 0 ? void 0 : _k.repository_owner,
                 tags: []
             };
             events.push(event);
@@ -948,8 +949,8 @@ function run() {
         }
         catch (error) {
             console.log("Error");
-            console.log(`Run failed: ${error.message}`);
-            core.setFailed(`Run failed: ${error.message}`);
+            console.log(`Run failed: ${(_l = error) === null || _l === void 0 ? void 0 : _l.message}`);
+            core.setFailed(`Run failed: ${(_m = error) === null || _m === void 0 ? void 0 : _m.message}`);
         }
     });
 }
