@@ -966,6 +966,9 @@ function createMetrics(ddDomainSuffix, apiKey, globalTags) {
     return __awaiter(this, void 0, void 0, function* () {
         const startTime = core.getInput('start-timestamp');
         const metrics = yaml.safeLoad(core.getInput('metrics'));
+        console.log(`Date Noe: ${Date.now()}`);
+        console.log(`Date start: ${startTime} : ie ${new Date(startTime).getTime()}`);
+        console.log(`Metric ${(Date.now() - new Date(startTime).getTime()) / 1000}`);
         const metric = {
             type: "count",
             name: "build.duration",
