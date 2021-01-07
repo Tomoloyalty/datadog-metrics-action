@@ -10,6 +10,9 @@ inputs:
     required: false
     default: 'eu'
 
+  start-timestamp:
+    description: 'Timestamp for calculating duration event'
+    required: false
   result:
     description: 'Result of the Build'
     required: false

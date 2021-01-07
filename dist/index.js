@@ -915,43 +915,66 @@ const core = __importStar(__webpack_require__(470));
 const dd = __importStar(__webpack_require__(223));
 const yaml = __importStar(__webpack_require__(414));
 function run() {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l, _m;
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         try {
             const datadogRegion = core.getInput('datadog-region');
             const ddDomainSuffix = (datadogRegion.toUpperCase() === 'EU') ? 'eu' : 'com';
             const apiKey = core.getInput('api-key');
+            const github = JSON.parse(core.getInput('github-context'));
             const globalTags = yaml.safeLoad(core.getInput('global-tags'));
             const result = core.getInput('result');
             const envName = core.getInput('env-name');
-            const github = JSON.parse(core.getInput('github-context'));
-            globalTags.push("project:" + github["repository"]);
-            globalTags.push("branch:" + github["ref"]);
-            globalTags.push("repo_owner:" + github["repository_owner"]);
-            globalTags.push("build_number:" + github["run_number"]);
-            globalTags.push("commit_sha:" + github["sha"]);
-            globalTags.push("actor:" + github["actor"]);
-            globalTags.push("source:" + "github");
-            globalTags.push("build_result:" + result);
-            globalTags.push("env:" + envName);
-            const metrics = yaml.safeLoad(core.getInput('metrics'));
-            yield dd.sendMetrics(ddDomainSuffix, apiKey, metrics, globalTags);
-            const events = yaml.safeLoad(core.getInput('events'));
-            const event = {
-                title: `# ${(_a = github) === null || _a === void 0 ? void 0 : _a.run_number} - ${(_b = github) === null || _b === void 0 ? void 0 : _b.repository} Build Result: ${result}`,
-                text: `Commit ${github["sha"]} : ${(_e = (_d = (_c = github) === null || _c === void 0 ? void 0 : _c.event) === null || _d === void 0 ? void 0 : _d.head_commit) === null || _e === void 0 ? void 0 : _e.message} -by: ${(_j = (_h = (_g = (_f = github) === null || _f === void 0 ? void 0 : _f.event) === null || _g === void 0 ? void 0 : _g.head_commit) === null || _h === void 0 ? void 0 : _h.author) === null || _j === void 0 ? void 0 : _j.name}`,
-                alert_type: result === 'failure' ? 'error' : result,
-                host: (_k = github) === null || _k === void 0 ? void 0 : _k.repository_owner,
-                tags: []
-            };
-            events.push(event);
-            yield dd.sendEvents(ddDomainSuffix, apiKey, events, globalTags);
+            addDefaultGlobalTags(globalTags, github, result, envName);
+            yield createEvents(ddDomainSuffix, apiKey, globalTags, github, result);
+            yield createMetrics(ddDomainSuffix, apiKey, globalTags);
         }
         catch (error) {
             console.log("Error");
-            console.log(`Run failed: ${(_l = error) === null || _l === void 0 ? void 0 : _l.message}`);
-            core.setFailed(`Run failed: ${(_m = error) === null || _m === void 0 ? void 0 : _m.message}`);
+            console.log(`Run failed: ${(_a = error) === null || _a === void 0 ? void 0 : _a.message}`);
+            core.setFailed(`Run failed: ${(_b = error) === null || _b === void 0 ? void 0 : _b.message}`);
         }
+    });
+}
+function addDefaultGlobalTags(globalTags, github, result, envName) {
+    globalTags.push("project:" + github["repository"]);
+    globalTags.push("branch:" + github["ref"]);
+    globalTags.push("repo_owner:" + github["repository_owner"]);
+    globalTags.push("build_number:" + github["run_number"]);
+    globalTags.push("commit_sha:" + github["sha"]);
+    globalTags.push("actor:" + github["actor"]);
+    globalTags.push("source:" + "github");
+    globalTags.push("build_result:" + result);
+    globalTags.push("env:" + envName);
+}
+function createEvents(ddDomainSuffix, apiKey, globalTags, github, result) {
+    var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
+    return __awaiter(this, void 0, void 0, function* () {
+        const events = yaml.safeLoad(core.getInput('events'));
+        const event = {
+            title: `# ${(_a = github) === null || _a === void 0 ? void 0 : _a.run_number} - ${(_b = github) === null || _b === void 0 ? void 0 : _b.repository} Build Result: ${result}`,
+            text: `Commit ${github["sha"]} : ${(_e = (_d = (_c = github) === null || _c === void 0 ? void 0 : _c.event) === null || _d === void 0 ? void 0 : _d.head_commit) === null || _e === void 0 ? void 0 : _e.message} -by: ${(_j = (_h = (_g = (_f = github) === null || _f === void 0 ? void 0 : _f.event) === null || _g === void 0 ? void 0 : _g.head_commit) === null || _h === void 0 ? void 0 : _h.author) === null || _j === void 0 ? void 0 : _j.name}`,
+            alert_type: result === 'failure' ? 'error' : result,
+            host: (_k = github) === null || _k === void 0 ? void 0 : _k.repository_owner,
+            tags: []
+        };
+        events.push(event);
+        yield dd.sendEvents(ddDomainSuffix, apiKey, events, globalTags);
+    });
+}
+function createMetrics(ddDomainSuffix, apiKey, globalTags) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const startTime = core.getInput('start-timestamp');
+        const metrics = yaml.safeLoad(core.getInput('metrics'));
+        const metric = {
+            type: "count",
+            name: "build.duration",
+            value: (Date.now() - new Date(startTime).getTime()) / 1000,
+            host: "Github",
+            tags: []
+        };
+        metrics.push(metric);
+        yield dd.sendMetrics(ddDomainSuffix, apiKey, metrics, globalTags);
     });
 }
 run();
