@@ -936,11 +936,14 @@ function run() {
             const metrics = yaml.safeLoad(core.getInput('metrics'));
             yield dd.sendMetrics(ddDomainSuffix, apiKey, metrics, globalTags);
             const events = yaml.safeLoad(core.getInput('events'));
-            events.push(yaml.safeLoad(`|
-            - title: "#${github.run_number} - ${github.repository} Build Result: ${result}"
-              text: "Commit ${github["sha"]} : ${github.event.head_commit.message} -by: ${github.event.head_commit.author.name}"
-              alert_type: ${result === 'failure' ? 'error' : result}
-              host: ${github.repository_owner} `));
+            const event = {
+                title: `# ${github.run_number} - ${github.repository} Build Result: ${result}`,
+                text: `Commit ${github["sha"]} : ${github.event.head_commit.message} -by: ${github.event.head_commit.author.name}`,
+                alert_type: result === 'failure' ? 'error' : result,
+                host: github.repository_owner,
+                tags: []
+            };
+            events.push(event);
             yield dd.sendEvents(ddDomainSuffix, apiKey, events, globalTags);
         }
         catch (error) {
