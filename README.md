@@ -174,5 +174,6 @@ $ git push ...
 
 ## Create a new Release Version 
 
+Use github release management, to increment tag and release version. 
 
 
