@@ -38,7 +38,7 @@ Just include:
 ```
 
 This will log a default build event. 
-*NOTE*: default event will not be logged if github context is provided. 
+*NOTE*: default event will not be logged if github context is not provided. 
 
 
 ### To log default Build Event and Build Metric (Build Duration)
